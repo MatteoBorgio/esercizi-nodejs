@@ -1,5 +1,5 @@
 const modulo = require('./module')
-const {readFileSync, writeFileSync} = require('fs')
+const {writeFileSync} = require('fs')
 
 function scriviListaSuFile(nomeFile, lista) {
     let contenuto = ""
@@ -11,4 +11,4 @@ function scriviListaSuFile(nomeFile, lista) {
 
 let tabellina = modulo.write_multiplication_table(6)
 
-scriviListaSuFile("./text.txt", tabellina, "utf8")
+scriviListaSuFile("./text.txt", tabellina)

@@ -13,7 +13,7 @@ function write_multiplication_table(number) {
         console.log("Il numero deve essere compreso tra 1 e 10")
     }
     else {
-        for (let i = 1; i <= number; i++) {
+        for (let i = 1; i < 10; i++) {
             multiplication_table.push(number * i);
         }
     }
