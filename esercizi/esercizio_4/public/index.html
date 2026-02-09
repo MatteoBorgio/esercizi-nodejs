@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rubrica</title>
+</head>
+<body>
+    <div>
+        <h3>Aggiungi contatto</h3>
+        <input type="text" id="name" placeholder="Inserisci il nome del contatto" required>
+        <input type="text" id="surname" placeholder="Inserisci il cognome del contatto" required>
+        <input type="email" id="email" placeholder="Inserisci la email del contatto" required>
+        <input type="text" id="phone" placeholder="Inserisci il numero di telefono del contatto" required>
+        <button type="button" onclick="addContact()">Aggiungi un contatto</button>
+
+        <p id="out"></p>
+    </div>
+
+    <script>
+        async function addContact() {
+            console.log("Funzione chiamata"); 
+            const name = document.getElementById('name')
+            const surname = document.getElementById('surname')
+            const email = document.getElementById('email')
+            const phone = document.getElementById('phone')
+            const out = document.getElementById('out')
+
+            try {
+                const res = await fetch('/api/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        name: name.value,
+                        surname: surname.value,
+                        email: email.value,
+                        phone: phone.value
+                    })
+                });
+
+                if (!res.ok) {
+                    console.error("Errore HTTP:", res.status);
+                    return;
+                }
+
+                const data = await res.json()
+
+                if (data.success){
+                    console.log(data)
+                }
+                else {
+                    console.error("fallito nell'aggiungere il contatto")
+                }
+            }
+            catch (error) {
+                console.log(error)
+            }
+        }
+    </script>
+</body>
+</html>

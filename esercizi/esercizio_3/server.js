@@ -68,7 +68,7 @@ app.get('/proverbi', (req, res) => {
 });
 
 app.get('/list'), (req, res) => {
-    res.status(404).send("Devi specificare un sottoindirizzo valido: /lista/cookie o /list/proverbi")
+    res.status(404).send("Devi specificare un sottoindirizzo valido: /lista/cookie o /lista/proverbi")
 }
 
 app.get("/lista/cookie", (req, res) => {
