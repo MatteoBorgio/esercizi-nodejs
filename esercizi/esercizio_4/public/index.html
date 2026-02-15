@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rubrica</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body onload="renderContacts()">
     <div>
@@ -13,10 +14,8 @@
         <input type="email" id="email" placeholder="Inserisci la email del contatto" required>
         <input type="text" id="phone" placeholder="Inserisci il numero di telefono del contatto" required>
         <button type="button" onclick="addContact()">Aggiungi un contatto</button>
-
         <ul id="out"></ul>
     </div>
-
     <script>
         async function renderContacts() {
             console.log("Funzione render contacts chiamata")
