@@ -15,6 +15,17 @@
         <input type="text" id="phone" placeholder="Inserisci il numero di telefono del contatto" required>
         <button type="button" onclick="addContact()">Aggiungi un contatto</button>
         <ul id="out"></ul>
+
+        <div id="modal">
+            <h3>Modifica contatto</h3>
+            <input type="hidden" id="editId" required>
+            <input type="text" id="editName" required>
+            <input type="text" id="editSurname" required>
+            <input type="text" id="editEmail" required>
+            <input type="text" id="editPhone" required>
+            <button type="button" onclick="editContact()">Salva</button>
+            <button type="button" onclick="closeModal()">Annulla</button>
+        </div>
     </div>
     <script>
         async function renderContacts() {
@@ -35,6 +46,7 @@
                             ${item.email} -
                             ${item.phone}
                             <button onclick="removeContacts(${item.id})">ELimina</button>
+                            <button onclick="openModal(${item.id})">Modifica</button>
                         </li>
                         `
                 })
@@ -42,6 +54,80 @@
                 console.log("Error: " + error)
             }
         }
+
+        async function editContact() {
+            const id = document.getElementById("editId").value
+            const name = document.getElementById("editName").value
+            const surname = document.getElementById("editSurname").value
+            const email = document.getElementById("editEmail").value
+            const phone = document.getElementById("editPhone").value
+
+            try {
+                const res = await fetch('/api/update', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        id: id,
+                        name: name,
+                        surname: surname,
+                        email: email,
+                        phone: phone
+                    })
+                })
+
+                if (!res.ok) {
+                    console.error("Errore HTTP:", res.status);
+                    return;
+                }
+                const data = await res.json()
+
+                if (data.success){
+                    console.log(data)
+                }
+                else {
+                    console.error("fallito nell'aggiornare il contatto")
+                }
+
+                await renderContacts()
+                closeModal()
+            } catch (error) {
+                console.log("Error: " + error)
+            }
+        }
+
+        async function openModal(id) {
+            try {
+                const res = await fetch('/api/contacts')
+                if (!res.ok) {
+                    console.error("Errore HTTP:", res.status);
+                    return;
+                }
+                const contacts = await res.json()
+                const contact = contacts.find(c => c.id === id)
+
+                if (!contact) {
+                    return
+                }
+
+                document.getElementById("editId").value = contact.id
+                document.getElementById("editName").value = contact.name
+                document.getElementById("editSurname").value = contact.surname
+                document.getElementById("editEmail").value = contact.email
+                document.getElementById("editPhone").value = contact.phone
+
+                document.getElementById("modal").style.display = "flex"
+
+            } catch (error) {
+                console.log("Error: " + error)
+            }
+        }
+
+        function closeModal() {
+            document.getElementById("modal").style.display = "none"
+        }
+
         async function addContact() {
             console.log("Funzione add contact chiamata");
             const name = document.getElementById('name')

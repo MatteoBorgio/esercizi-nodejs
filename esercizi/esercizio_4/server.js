@@ -72,6 +72,50 @@ app.post('/api/remove', (req, res) => {
     }
 })
 
+app.post('/api/update', (req, res) => {
+    try {
+        const contact = req.body
+        if (!contact.name || !contact.surname || !contact.email || !contact.phone || !contact.id) {
+            return res.status(400).json({
+                success: false,
+                error: "Bisogna inserire tutti i campi"
+            })
+        }
+        console.log("Ricevuto contatto:", contact);
+        const data = fs.readFileSync(CONTACTS_PATH, "utf-8")
+        const contacts = JSON.parse(data)
+        const index = contacts.findIndex(c => c.id === parseInt(contact.id))
+        if (index === -1) {
+            return res.status(500).json({
+                success: false,
+                error: "Contatto non trovato"
+            })
+        }
+        contacts[index] = {
+            id: contacts[index].id,
+            name: contact.name,
+            surname: contact.surname,
+            email: contact.email,
+            phone: contact.phone
+        }
+
+        fs.writeFileSync(CONTACTS_PATH, JSON.stringify(contacts, null, 2))
+
+        return res.status(200).json({
+            success: true,
+            contatto: contacts[index],
+            message: "Contatto modificato con successo"
+        })
+    } catch (error) {
+        console.log(error)
+        return res
+            .status(500)
+            .json({
+                success: false,
+                error
+            })
+    }
+})
 app.get('/api/contacts', (req, res) => {
     const data = fs.readFileSync(CONTACTS_PATH, "utf-8")
     const contacts = JSON.parse(data)
