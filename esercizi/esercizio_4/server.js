@@ -11,18 +11,18 @@ app.use(express.static('public'));
 
 app.post('/api/add', (req, res) => {
     try {
-        const contatto = req.body
-        console.log("Ricevuto contatto:", contatto);
+        const contact = req.body
+        console.log("Ricevuto contatto:", contact);
         const data = fs.readFileSync(CONTACTS_PATH, "utf-8")
-        const contatti = JSON.parse(data)
-        contatto.id = Date.now()
-        contatti.push(contatto)
+        const contacts = JSON.parse(data)
+        contact.id = Date.now()
+        contacts.push(contact)
 
-        fs.writeFileSync(CONTACTS_PATH, JSON.stringify(contatti, null, 2));
+        fs.writeFileSync(CONTACTS_PATH, JSON.stringify(contacts, null, 2));
 
         res.status(201).json({
         success: true,
-        contatto
+        contatto: contact
         });
     }
     catch (error) {
@@ -36,8 +36,35 @@ app.post('/api/add', (req, res) => {
     }
 })
 
+app.post('/api/remove', (req, res) => {
+    try {
+        const { id } = req.body
+        console.log("Ricevuto id contatto " + id)
+        const data = fs.readFileSync(CONTACTS_PATH, "utf-8")
+        const contacts = JSON.parse(data)
+        const newContacts = contacts.filter(item => Number(item.id) !== Number(id))
+        fs.writeFileSync(CONTACTS_PATH, JSON.stringify(newContacts, null, 2))
 
+        res.status(200).json({
+            success: true,
+            nuoviContatti: newContacts
+        });
+    } catch (error) {
+        console.log(error)
+        res
+            .status(500)
+            .json({
+                success: false,
+                error
+            })
+    }
+})
 
+app.get('/api/contacts', (req, res) => {
+    const data = fs.readFileSync(CONTACTS_PATH, "utf-8")
+    const contacts = JSON.parse(data)
+    res.json(contacts)
+})
 
 app.use((req, res) => {
     res.status(404).send("<h1>404 - Pagina non trovata</h1>");

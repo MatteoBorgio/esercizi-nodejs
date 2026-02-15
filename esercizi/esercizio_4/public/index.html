@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rubrica</title>
 </head>
-<body>
+<body onload="renderContacts()">
     <div>
         <h3>Aggiungi contatto</h3>
         <input type="text" id="name" placeholder="Inserisci il nome del contatto" required>
@@ -14,17 +14,41 @@
         <input type="text" id="phone" placeholder="Inserisci il numero di telefono del contatto" required>
         <button type="button" onclick="addContact()">Aggiungi un contatto</button>
 
-        <p id="out"></p>
+        <ul id="out"></ul>
     </div>
 
     <script>
+        async function renderContacts() {
+            console.log("Funzione render contacts chiamata")
+            const out = document.getElementById('out')
+            out.innerHTML = ""
+            try {
+                const res = await fetch('/api/contacts')
+                if (!res.ok) {
+                    console.error("Errore HTTP:", res.status);
+                    return;
+                }
+                const contacts = await res.json()
+                contacts.forEach(item => {
+                    out.innerHTML += `
+                        <li>
+                            ${item.name} ${item.surname} -
+                            ${item.email} -
+                            ${item.phone}
+                            <button onclick="removeContacts(${item.id})">ELimina</button>
+                        </li>
+                        `
+                })
+            } catch (error) {
+                console.log("Error: " + error)
+            }
+        }
         async function addContact() {
-            console.log("Funzione chiamata"); 
+            console.log("Funzione add contact chiamata");
             const name = document.getElementById('name')
             const surname = document.getElementById('surname')
             const email = document.getElementById('email')
             const phone = document.getElementById('phone')
-            const out = document.getElementById('out')
 
             try {
                 const res = await fetch('/api/add', {
@@ -53,9 +77,42 @@
                 else {
                     console.error("fallito nell'aggiungere il contatto")
                 }
+
+                await renderContacts()
             }
             catch (error) {
                 console.log(error)
+            }
+        }
+
+        async function removeContacts(id) {
+            try {
+                const res = await fetch('api/remove', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        id: id
+                    })
+                })
+
+                if (!res.ok) {
+                    console.error("Errore HTTP:", res.status);
+                    return;
+                }
+                const data = await res.json()
+
+                if (data.success){
+                    console.log(data)
+                }
+                else {
+                    console.error("fallito nel rimuovere il contatto")
+                }
+
+                await renderContacts()
+            } catch (error) {
+                console.log("Error: " + error)
             }
         }
     </script>
